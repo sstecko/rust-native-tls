@@ -216,7 +216,11 @@ impl TlsConnector {
         let mut builder = SchannelCred::builder();
         builder.enabled_protocols(&self.protocols);
         if let Some(cert) = self.cert.as_ref() {
-            builder.cert(cert.clone());
+            if let Some(usage) = cert.key_usage() {
+                if usage.contains("Digital Signature") {
+                    builder.cert(cert.clone());
+                }
+            }
         }
         let cred = try!(builder.acquire(Direction::Outbound));
         let mut builder = tls_stream::Builder::new();
