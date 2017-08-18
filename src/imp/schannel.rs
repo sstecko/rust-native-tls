@@ -332,6 +332,9 @@ pub trait TlsConnectorBuilderExt {
     fn verify_callback<F>(&mut self, callback: F)
     where
         F: Fn(tls_stream::CertValidationResult) -> io::Result<()> + 'static + Send + Sync;
+
+    /// Allows a certContext to be used for identity instead of pkcs12    
+    fn identity(&mut self, cert: CertContext) -> Result<(), Error>;
 }
 
 impl TlsConnectorBuilderExt for ::TlsConnectorBuilder {
@@ -340,6 +343,11 @@ impl TlsConnectorBuilderExt for ::TlsConnectorBuilder {
         F: Fn(tls_stream::CertValidationResult) -> io::Result<()> + 'static + Send + Sync,
     {
         (self.0).0.callback = Some(Arc::new(callback));
+    }
+
+    fn identity(&mut self, cert: CertContext) -> Result<(), Error> {
+        (self.0).0.cert = Some(cert);
+        Ok(())
     }
 }
 
