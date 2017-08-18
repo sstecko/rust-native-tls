@@ -334,7 +334,7 @@ pub trait TlsConnectorBuilderExt {
         F: Fn(tls_stream::CertValidationResult) -> io::Result<()> + 'static + Send + Sync;
 
     /// Allows a certContext to be used for identity instead of pkcs12    
-    fn identity(&mut self, cert: CertContext) -> Result<(), Error>;
+    fn cert_identity(&mut self, cert: CertContext) -> Result<(), Error>;
 }
 
 impl TlsConnectorBuilderExt for ::TlsConnectorBuilder {
@@ -345,7 +345,7 @@ impl TlsConnectorBuilderExt for ::TlsConnectorBuilder {
         (self.0).0.callback = Some(Arc::new(callback));
     }
 
-    fn identity(&mut self, cert: CertContext) -> Result<(), Error> {
+    fn cert_identity(&mut self, cert: CertContext) -> Result<(), Error> {
         (self.0).0.cert = Some(cert);
         Ok(())
     }
